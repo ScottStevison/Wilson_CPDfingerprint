@@ -120,6 +120,7 @@ for ( my $a = 0; $a < scalar @plusfiles; $a++ )
 	my $reads = CPDNucReads->new($plusfiles[$a], $minusfiles[$a]);
 	foreach my $chr (sort keys %tf)
 	{
+		my %prevsite = ();
 		print STDERR "Starting $chr\n";
 		my %plusreads = $reads->get_plus_reads_for_chromosome($chr);
 		my $num_plusreads = scalar keys %plusreads;
@@ -151,8 +152,17 @@ for ( my $a = 0; $a < scalar @plusfiles; $a++ )
 	                        my $windowstart = $tfmidpoint - $window;
 	                        my $windowend = $tfmidpoint + $window;
 				my $tfbsid = "$chr:$tfmidpoint $tfstrand";
-	                        if ( $a == 0 )
-	                        {
+				my $pos = "$tfbsname $chr:$tfmidpoint";
+				if ( exists $prevsite{$pos} && $prevsite{$pos} == 1 )
+				{
+					next;
+				}
+				else
+				{
+					$prevsite{$pos} = 1 ;
+				}
+		                if ( $a == 0 )
+		                {
 	                                my $bedstart = $tfmidpoint - $bedwindow;
 	                                my $bedend = $tfmidpoint + $bedwindow;
 	
@@ -199,6 +209,16 @@ for ( my $a = 0; $a < scalar @plusfiles; $a++ )
                                 my $windowstart = $tfmidpoint - $window;
                                 my $windowend = $tfmidpoint + $window;
                                 my $tfbsid = "$chr:$tfmidpoint $tfstrand";
+
+                                my $pos = "$tfbsname $chr:$tfmidpoint";
+                                if ( exists $prevsite{$pos} && $prevsite{$pos} == 1 )
+                                {
+                                        next;
+                                }
+                                else
+                                {
+                                        $prevsite{$pos} = 1 ;
+                                }
 
                                 if ( $a == 0 )
                                 {       
